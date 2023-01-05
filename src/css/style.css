@@ -4,28 +4,25 @@ body {
   font-weight: 700;
   background-image: radial-gradient(#78ff78, #636363);
 }
-.header {
-  width: 100%;
-}
-.wraper {
-  max-width: 400px;
-  min-width: 300px;
-  padding: 10px;
-  margin: 0 auto;
-}
-.header__title {
-  text-align: center;
-  font-size: 2rem;
-}
 
 .main {
-  width: 100%;
+  /* width: 100%; */
+}
+.wraper {
+  width: calc(100vh / 2);
+  min-width: 290px;
+  padding: 15px;
+  margin: 0 auto;
 }
 .calkulator {
+  height: calc(100vh - 30px);
+  width: calc(100vh / 2);
   border: 10px solid #000;
   border-radius: 50px;
   outline: 5px solid #999999;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
 }
 .headerCalk {
   padding: 10px 25px;
@@ -54,9 +51,12 @@ body {
   padding: 0 5px;
 }
 .board {
+  position: relative;
+  flex-grow: 1;
   margin: 30px 10px;
 }
 .board__text {
+  height: 100%;
   width: 100%;
   text-align: right;
   background-color: lightskyblue;
@@ -67,11 +67,27 @@ body {
   padding: 10px;
   resize: none;
 }
-
+.results {
+  position: absolute;
+  right: 10px;
+  max-width: calc(100% - 20px);
+  bottom: 10px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: right;
+  border-radius: 5px;
+  color: rgb(100, 22, 22);
+  background-color: transparent;
+}
+.results::before {
+  content: '=';
+  color: #000;
+  font-size: 2.5rem;
+}
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  gap: calc(100vh / 60);
   text-align: center;
   padding: 0 20px 20px 20px;
 }
@@ -81,11 +97,12 @@ body {
   border-radius: 5px;
   font-size: 1.5rem;
   line-height: 1.5;
-  padding: 10px;
+  padding: calc(100vh / 90);
   box-shadow: 2px 2px 2px 2px #000;
   transition: transform ease-in-out 0.2s;
   cursor: pointer;
 }
+
 .button:hover {
   transform: scale(1.15);
 }
