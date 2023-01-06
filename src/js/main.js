@@ -5,7 +5,7 @@ navigator.getBattery().then((battery) => {
     updateLevelInfo();
   });
   function updateLevelInfo() {
-    baterrylevel.innerHTML = `${battery.level * 100}%`;
+    baterrylevel.innerHTML = `${Math.round(battery.level * 100)}%`;
   }
 });
 
