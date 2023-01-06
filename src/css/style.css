@@ -15,6 +15,8 @@ body {
   margin: 0 auto;
 }
 .calkulator {
+  min-height: 600px;
+  min-width: 320px;
   height: calc(100vh - 30px);
   width: calc(100vh / 2);
   border: 10px solid #000;
@@ -28,24 +30,51 @@ body {
   padding: 10px 25px;
   display: grid;
   grid-template-columns: 40% 20% 30% 10%;
+  align-items: center;
   line-height: 1.5;
 }
-
+.time {
+  line-height: 1.2;
+}
+.hour {
+  margin-right: -3px;
+}
+.minute {
+  margin-left: -3px;
+}
 .is-notTwoDotet {
   visibility: hidden;
 }
 .date {
-  font-size: 0.5rem;
-  padding-left: 5px;
+  font-size: 0.6rem;
 }
 .headerCalk__camera {
   background-color: #000;
+  height: 50%;
   margin: 5px;
   border-radius: 10px;
 }
-
+.connectionNosignal {
+  background-image: url(../img/SignalSlow.png);
+}
+.connectionE {
+  background-image: url(../img/Signal2G.png);
+}
+.connection3G {
+  background-image: url(../img/Signal3G.png);
+}
+.connection4G {
+  background-image: url(../img/Signal4G.png);
+}
+.connection5G {
+  background-image: url(../img/Signal5G.png);
+}
 .headerCalk__connection {
   text-align: right;
+  height: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right;
 }
 .headerCalk__battery {
   padding: 0 5px;
@@ -69,6 +98,7 @@ body {
 }
 .results {
   position: absolute;
+  overflow: hidden;
   right: 10px;
   max-width: calc(100% - 20px);
   bottom: 10px;
@@ -79,7 +109,7 @@ body {
   color: rgb(100, 22, 22);
   background-color: transparent;
 }
-.results::before {
+.psevdoResult::before {
   content: '=';
   color: #000;
   font-size: 2.5rem;
