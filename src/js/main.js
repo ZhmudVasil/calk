@@ -76,20 +76,29 @@ setTimeout(() => {
 }, 1500);
 
 function clearAll() {
-  firstNumber = '';
-  secondNumber = '';
+  // firstNumber = '';
+  // secondNumber = '';
   sign = '';
   finish = false;
-  input.value = 0;
+  input.value = '';
   resultCalk.textContent = 0;
   document.querySelector('.results').classList.remove('psevdoResult');
 }
 
 function maxDigits(res) {
-  let str = res.toString();
-  if (str.length > 10) {
-    return str.slice(0, 9) + 'e' + (str.length - 10);
-  } else return res;
+  let str = res;
+  if (arg.toString().length > 14) {
+    str = parseFloat(arg.toPrecision(12));
+    if (str.toString().length > 14) {
+      str = str.toExponential(9);
+    }
+    return str;
+  } else {
+    return res;
+  }
+  // if (str.length > 10) {
+  //   return str.slice(0, 9) + 'e' + (str.length - 10);
+  // } else return res;
 }
 
 document.querySelector('.button__null').onclick = clearAll;
@@ -99,70 +108,97 @@ document.querySelector('.buttons').onclick = (event) => {
   let key = event.target.textContent;
   if (!target.classList.contains('button')) return;
   if (target.classList.contains('button__null')) return;
-  if (digit.includes(key)) {
-    if (secondNumber === '' && sign === '') {
-      firstNumber += key;
-      input.value = maxDigits(firstNumber);
-    } else if (firstNumber !== '' && secondNumber !== '' && finish) {
-      secondNumber = key;
-      finish = false;
-      input.value = maxDigits(secondNumber);
-    } else {
-      secondNumber += key;
-      input.value = maxDigits(secondNumber);
-      resultCalk.textContent = maxDigits(firstNumber);
+  if (target.classList.contains('button__point')) {
+    let lastSimbol = input.value.slice(input.value.length - 1);
+    if (lastSimbol === '*' || lastSimbol === '/' || lastSimbol === '+' || lastSimbol === '-' || lastSimbol === '') {
+      input.value += '0';
+    } else if (lastSimbol === '.') {
+      return;
     }
+    if (
+      input.value.split('.').length > 1 &&
+      input.value.split('.')[input.value.split('.').length - 1].match(/\/|\*|\+|-|=/) === null
+    ) {
+      return;
+    }
+  }
+  if (digit.includes(key)) {
+    input.value += key;
+    resultCalk.textContent = results(input.value);
   }
   if (action.includes(key)) {
-    sign = key;
-    input.value = sign;
+    // sign = key;
+    input.value += key;
     return;
   }
-  if (target.classList.contains('button__proc')) {
-    firstNumber = firstNumber / 100;
-    input.value = maxDigits(firstNumber);
-    resultCalk.textContent = maxDigits(firstNumber);
-  }
-  if (target.classList.contains('button__plusMinus')) {
-    if (sign === '' && firstNumber > 0) {
-      firstNumber = firstNumber - 2 * firstNumber;
-      input.value = maxDigits(firstNumber);
-    } else if (sign === '' && firstNumber < 0) {
-      firstNumber = firstNumber + 2 * Math.abs(firstNumber);
-      input.value = maxDigits(firstNumber);
-    } else if (secondNumber > 0) {
-      secondNumber = secondNumber - 2 * secondNumber;
-      input.value = maxDigits(secondNumber);
-    } else if (secondNumber < 0) {
-      secondNumber = secondNumber + 2 * Math.abs(secondNumber);
-      input.value = maxDigits(secondNumber);
-    } else return;
-  }
-  if (key === '=') {
-    if (secondNumber === '') secondNumber = firstNumber;
-    switch (sign) {
-      case '+':
-        firstNumber = +firstNumber + +secondNumber;
-        break;
-      case '-':
-        firstNumber = firstNumber - secondNumber;
-        break;
-      case '*':
-        firstNumber = firstNumber * secondNumber;
-        break;
-      case '/':
-        if (secondNumber === '0') {
-          firstNumber = 'Error!';
-        } else {
-          firstNumber = firstNumber / secondNumber;
-        }
-        break;
-    }
-    finish = true;
-    input.value = maxDigits(firstNumber);
-    resultCalk.textContent = maxDigits(firstNumber);
-  }
+  // if (target.classList.contains('button__proc')) {
+  //   firstNumber = firstNumber / 100;
+  //   input.value = firstNumber;
+  //   resultCalk.textContent = firstNumber;
+  // }
+  // if (target.classList.contains('button__plusMinus')) {
+  //   if (sign === '' && firstNumber > 0) {
+  //     firstNumber = firstNumber - 2 * firstNumber;
+  //     input.value = firstNumber;
+  //   } else if (sign === '' && firstNumber < 0) {
+  //     firstNumber = firstNumber + 2 * Math.abs(firstNumber);
+  //     input.value = firstNumber;
+  //   } else if (secondNumber > 0) {
+  //     secondNumber = secondNumber - 2 * secondNumber;
+  //     input.value = secondNumber;
+  //   } else if (secondNumber < 0) {
+  //     secondNumber = secondNumber + 2 * Math.abs(secondNumber);
+  //     input.value = secondNumber;
+  //   } else return;
+  // }
+  // if (key === '=') {
+  //   if (secondNumber === '') secondNumber = firstNumber;
+  //   switch (sign) {
+  //     case '+':
+  //       firstNumber = +firstNumber + +secondNumber;
+  //       break;
+  //     case '-':
+  //       firstNumber = firstNumber - secondNumber;
+  //       break;
+  //     case '*':
+  //       firstNumber = firstNumber * secondNumber;
+  //       break;
+  //     case '/':
+  //       if (secondNumber === '0') {
+  //         firstNumber = 'Error!';
+  //       } else {
+  //         firstNumber = firstNumber / secondNumber;
+  //       }
+  //       break;
+  //   }
+  //   finish = true;
+  //   input.value = firstNumber;
+  //   resultCalk.textContent = firstNumber;
+  // }
   if (resultCalk.textContent !== '') {
     document.querySelector('.results').classList.add('psevdoResult');
   }
 };
+
+function results(arr) {
+  let arrDigits = arr.split(/\/|\*|\+|-|=/);
+  let arrSign = arr.split(/\d/).filter((item) => item !== '' && item !== '.');
+  let operators = ['*', '/', '-', '+'];
+  for (let i = 0; i < operators.length; i++) {
+    let countOperator = arrSign.filter((item) => item === operators[i]);
+    for (let j = 0; j < countOperator.length; j++) {
+      let index = arrSign.indexOf(operators[i]);
+      if (operators[i] === '*') {
+        arrDigits.splice(index, 2, +arrDigits[index] * +arrDigits[index + 1]);
+      } else if (operators[i] === '/') {
+        arrDigits.splice(index, 2, +arrDigits[index] / +arrDigits[index + 1]);
+      } else if (operators[i] === '+') {
+        arrDigits.splice(index, 2, +(+arrDigits[index] + +arrDigits[index + 1]).toFixed(3));
+      } else {
+        arrDigits.splice(index, 2, +(+arrDigits[index] - +arrDigits[index + 1]).toFixed(3));
+      }
+      arrSign.splice(index, 1);
+    }
+  }
+  return arrDigits;
+}
