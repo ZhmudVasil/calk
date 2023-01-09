@@ -64,11 +64,14 @@ function updateConnectionStatus() {
 
 const input = document.querySelector('.board__text');
 const resultCalk = document.querySelector('.results');
-const digit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+const digit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const action = ['-', '+', '*', '/'];
-let firstNumber = '';
-let secondNumber = '';
-let sign = '';
+// let firstNumber = '';
+// let secondNumber = '';
+let sign = [];
+let value = '';
+let numbers = [];
+let plusMinusValue = false;
 let finish = false;
 
 setTimeout(() => {
@@ -78,27 +81,13 @@ setTimeout(() => {
 function clearAll() {
   // firstNumber = '';
   // secondNumber = '';
-  sign = '';
+  sign = [];
+  value = '';
+  numbers = [];
   finish = false;
   input.value = '';
   resultCalk.textContent = 0;
   document.querySelector('.results').classList.remove('psevdoResult');
-}
-
-function maxDigits(res) {
-  let str = res;
-  if (arg.toString().length > 14) {
-    str = parseFloat(arg.toPrecision(12));
-    if (str.toString().length > 14) {
-      str = str.toExponential(9);
-    }
-    return str;
-  } else {
-    return res;
-  }
-  // if (str.length > 10) {
-  //   return str.slice(0, 9) + 'e' + (str.length - 10);
-  // } else return res;
 }
 
 document.querySelector('.button__null').onclick = clearAll;
@@ -110,8 +99,11 @@ document.querySelector('.buttons').onclick = (event) => {
   if (target.classList.contains('button__null')) return;
   if (target.classList.contains('button__point')) {
     let lastSimbol = input.value.slice(input.value.length - 1);
+
     if (lastSimbol === '*' || lastSimbol === '/' || lastSimbol === '+' || lastSimbol === '-' || lastSimbol === '') {
-      input.value += '0';
+      input.value += '0.';
+      value += '0.';
+      numbers.push(+value);
     } else if (lastSimbol === '.') {
       return;
     }
@@ -121,36 +113,68 @@ document.querySelector('.buttons').onclick = (event) => {
     ) {
       return;
     }
-  }
-  if (digit.includes(key)) {
-    input.value += key;
-    resultCalk.textContent = results(input.value);
-  }
-  if (action.includes(key)) {
-    // sign = key;
-    input.value += key;
+    input.value += '.';
+    value += '.';
     return;
   }
-  // if (target.classList.contains('button__proc')) {
-  //   firstNumber = firstNumber / 100;
-  //   input.value = firstNumber;
-  //   resultCalk.textContent = firstNumber;
-  // }
-  // if (target.classList.contains('button__plusMinus')) {
-  //   if (sign === '' && firstNumber > 0) {
-  //     firstNumber = firstNumber - 2 * firstNumber;
-  //     input.value = firstNumber;
-  //   } else if (sign === '' && firstNumber < 0) {
-  //     firstNumber = firstNumber + 2 * Math.abs(firstNumber);
-  //     input.value = firstNumber;
-  //   } else if (secondNumber > 0) {
-  //     secondNumber = secondNumber - 2 * secondNumber;
-  //     input.value = secondNumber;
-  //   } else if (secondNumber < 0) {
-  //     secondNumber = secondNumber + 2 * Math.abs(secondNumber);
-  //     input.value = secondNumber;
-  //   } else return;
-  // }
+  if (digit.includes(key)) {
+    let lastSimbol = input.value.slice(input.value.length - 1);
+    let lastTwoSimbol = input.value.slice(input.value.length - 2);
+    if (
+      (lastSimbol !== '.' && value !== '') ||
+      (lastSimbol === '0' && value === '0') ||
+      (lastTwoSimbol === '0.' && value === '0.') ||
+      (lastSimbol === '.' && value !== '')
+    ) {
+      numbers.pop();
+    }
+
+    input.value += key;
+    value += key;
+    numbers.push(+value);
+
+    resultCalk.textContent = results();
+  }
+
+  if (action.includes(key)) {
+    if (!numbers[0]) return;
+    if (numbers.length <= sign.length) {
+      sign.pop();
+      sign.push(key);
+      let text = input.value;
+      input.value = text.substr(0, text.length - 1) + key;
+    } else {
+      numbers.pop();
+      numbers.push(+value);
+      value = '';
+      sign.push(key);
+      input.value += key;
+    }
+
+    return;
+  }
+  if (target.classList.contains('button__plusMinus')) {
+    plusMinusValue = true;
+    let lastDigits = numbers[numbers.length - 1];
+    let lengthPositivStr = input.value.length - lastDigits.toString().length;
+    let lengthNegativStr = input.value.length - lastDigits.toString().length - 2;
+    let text;
+
+    if (lastDigits > 0) {
+      lastDigits = lastDigits - 2 * lastDigits;
+      text = input.value.substring(0, lengthPositivStr);
+      input.value = text + '(' + lastDigits + ')';
+    } else if (lastDigits < 0) {
+      lastDigits = lastDigits + 2 * Math.abs(lastDigits);
+      text = input.value.substring(0, lengthNegativStr);
+      input.value = text + lastDigits;
+    }
+
+    resultCalk.textContent = results();
+  }
+
+  // let arrDigits = arr.split(/\/|\*|\+|-|=/);
+  // let arrSign = arr.split(/\d/).filter((item) => item !== '' && item !== '.');
   // if (key === '=') {
   //   if (secondNumber === '') secondNumber = firstNumber;
   //   switch (sign) {
@@ -180,25 +204,57 @@ document.querySelector('.buttons').onclick = (event) => {
   }
 };
 
-function results(arr) {
-  let arrDigits = arr.split(/\/|\*|\+|-|=/);
-  let arrSign = arr.split(/\d/).filter((item) => item !== '' && item !== '.');
+function plusMinus(arr) {
+  let lastDigits = +arr.pop();
+  if (lastDigits > 0) {
+    lastDigits = lastDigits - 2 * lastDigits;
+  } else if (lastDigits < 0) {
+    lastDigits = lastDigits + 2 * Math.abs(lastDigits);
+  }
+  numbers.pop();
+  console.log(numbers);
+  numbers.push(lastDigits);
+  console.log(numbers);
+  return arr.push(lastDigits);
+}
+
+function results() {
+  let arrDigits = numbers.slice(0);
+  console.log(numbers);
+
+  let arrSign = sign.slice(0);
+  if (plusMinusValue === true) {
+    plusMinus(arrDigits);
+  }
   let operators = ['*', '/', '-', '+'];
   for (let i = 0; i < operators.length; i++) {
     let countOperator = arrSign.filter((item) => item === operators[i]);
     for (let j = 0; j < countOperator.length; j++) {
       let index = arrSign.indexOf(operators[i]);
       if (operators[i] === '*') {
-        arrDigits.splice(index, 2, +arrDigits[index] * +arrDigits[index + 1]);
+        arrDigits.splice(index, 2, maxDigits(+arrDigits[index] * +arrDigits[index + 1]));
       } else if (operators[i] === '/') {
-        arrDigits.splice(index, 2, +arrDigits[index] / +arrDigits[index + 1]);
+        arrDigits.splice(index, 2, maxDigits(+arrDigits[index] / +arrDigits[index + 1]));
       } else if (operators[i] === '+') {
-        arrDigits.splice(index, 2, +(+arrDigits[index] + +arrDigits[index + 1]).toFixed(3));
+        arrDigits.splice(index, 2, maxDigits(+arrDigits[index] + +arrDigits[index + 1]));
       } else {
-        arrDigits.splice(index, 2, +(+arrDigits[index] - +arrDigits[index + 1]).toFixed(3));
+        arrDigits.splice(index, 2, maxDigits(+arrDigits[index] - +arrDigits[index + 1]));
       }
       arrSign.splice(index, 1);
     }
   }
+  plusMinusValue = false;
   return arrDigits;
+}
+
+function maxDigits(rez) {
+  if (rez.toString().length > 15) {
+    rez = parseFloat(rez.toPrecision(13));
+    if (rez.toString().length > 15) {
+      rez = rez.toExponential(12);
+    }
+    return rez;
+  } else {
+    return rez;
+  }
 }
