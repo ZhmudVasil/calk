@@ -126,6 +126,24 @@ document.querySelector('.buttons').onclick = (event) => {
     value += '.';
     return;
   }
+  if (target.classList.contains('button__proc')) {
+    let lastSign = sign[sign.length - 1];
+    if (value !== '' && value !== '0.') {
+      let lengthStr = input.value.length - numbers[numbers.length - 1].toString().length;
+      if (lastSign === undefined || lastSign === '/' || lastSign === '*') {
+        let lastNumber = numbers.pop();
+        numbers.push(+lastNumber / 100);
+      } else if (lastSign === '+' || lastSign === '-') {
+        let lastNumber = numbers.pop();
+        let numberForProc = numbers[numbers.length - 1];
+        numbers.push((+numberForProc * +lastNumber) / 100);
+      }
+      let text = input.value.substring(0, lengthStr);
+      input.value = text + numbers[numbers.length - 1];
+      resultCalk.textContent = results();
+    }
+    return;
+  }
   if (digit.includes(key)) {
     let lastSimbol = input.value.slice(input.value.length - 1);
     let lastTwoSimbol = input.value.slice(input.value.length - 2);
@@ -152,7 +170,7 @@ document.querySelector('.buttons').onclick = (event) => {
       let text = input.value;
       input.value = text.substr(0, text.length - 1) + key;
     } else {
-      if (+numbers[numbers.length - 1] > 0) {
+      if (+numbers[numbers.length - 1] > 0 && numbers.length - sign.length !== 1) {
         numbers.pop();
         numbers.push(+value);
       }
@@ -223,6 +241,7 @@ function results() {
       arrSign.splice(index, 1);
     }
   }
+  console.log(numbers);
   plusMinusValue = false;
   return arrDigits;
 }
