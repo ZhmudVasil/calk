@@ -90,7 +90,7 @@ document.querySelector('.buttons').onclick = (event) => {
   let target = event.target;
   let key = event.target.textContent;
   if (target.classList.contains('button__equal')) {
-    if (finish === true) {
+    if (finish === true && sign[0]) {
       numbers.push(numbers[numbers.length - 1]);
       sign.push(sign[sign.length - 1]);
       resultCalk.textContent = results();
