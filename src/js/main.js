@@ -9,9 +9,6 @@ navigator.getBattery().then((battery) => {
   }
 });
 
-// let hour = document.querySelector('.hour');
-// let minute = document.querySelector('.minute');
-// let date = document.querySelector('.date');
 function clock() {
   const datetime = new Date();
   document.querySelector('.minute').innerHTML = datetime.getMinutes().toString().padStart(2, '0');
@@ -66,8 +63,6 @@ const input = document.querySelector('.board__text');
 const resultCalk = document.querySelector('.results');
 const digit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const action = ['-', '+', '*', '/'];
-// let firstNumber = '';
-// let secondNumber = '';
 let sign = [];
 let value = '';
 let numbers = [];
@@ -79,8 +74,6 @@ setTimeout(() => {
 }, 1500);
 
 function clearAll() {
-  // firstNumber = '';
-  // secondNumber = '';
   sign = [];
   value = '';
   numbers = [];
@@ -88,6 +81,7 @@ function clearAll() {
   input.value = '';
   resultCalk.textContent = 0;
   document.querySelector('.results').classList.remove('psevdoResult');
+  document.querySelector('.results').classList.remove('isFinishRezult');
 }
 
 document.querySelector('.button__null').onclick = clearAll;
@@ -95,6 +89,21 @@ document.querySelector('.button__null').onclick = clearAll;
 document.querySelector('.buttons').onclick = (event) => {
   let target = event.target;
   let key = event.target.textContent;
+  if (target.classList.contains('button__equal')) {
+    if (finish === true) {
+      numbers.push(numbers[numbers.length - 1]);
+      sign.push(sign[sign.length - 1]);
+      resultCalk.textContent = results();
+    } else {
+      finish = true;
+      document.querySelector('.results').classList.add('isFinishRezult');
+    }
+    return;
+  }
+  if (finish === true) {
+    clearAll();
+    finish = false;
+  }
   if (!target.classList.contains('button')) return;
   if (target.classList.contains('button__null')) return;
   if (target.classList.contains('button__point')) {
@@ -120,19 +129,18 @@ document.querySelector('.buttons').onclick = (event) => {
   if (digit.includes(key)) {
     let lastSimbol = input.value.slice(input.value.length - 1);
     let lastTwoSimbol = input.value.slice(input.value.length - 2);
-    if (
-      (lastSimbol !== '.' && value !== '') ||
-      (lastSimbol === '0' && value === '0') ||
-      (lastTwoSimbol === '0.' && value === '0.') ||
-      (lastSimbol === '.' && value !== '')
-    ) {
+    if (value !== '') {
       numbers.pop();
     }
+    if (value === '0') {
+      let text = input.value;
+      input.value = text.substr(0, text.length - 1) + key;
+    } else {
+      input.value += key;
+    }
 
-    input.value += key;
     value += key;
     numbers.push(+value);
-
     resultCalk.textContent = results();
   }
 
@@ -144,8 +152,10 @@ document.querySelector('.buttons').onclick = (event) => {
       let text = input.value;
       input.value = text.substr(0, text.length - 1) + key;
     } else {
-      numbers.pop();
-      numbers.push(+value);
+      if (+numbers[numbers.length - 1] > 0) {
+        numbers.pop();
+        numbers.push(+value);
+      }
       value = '';
       sign.push(key);
       input.value += key;
@@ -172,33 +182,6 @@ document.querySelector('.buttons').onclick = (event) => {
 
     resultCalk.textContent = results();
   }
-
-  // let arrDigits = arr.split(/\/|\*|\+|-|=/);
-  // let arrSign = arr.split(/\d/).filter((item) => item !== '' && item !== '.');
-  // if (key === '=') {
-  //   if (secondNumber === '') secondNumber = firstNumber;
-  //   switch (sign) {
-  //     case '+':
-  //       firstNumber = +firstNumber + +secondNumber;
-  //       break;
-  //     case '-':
-  //       firstNumber = firstNumber - secondNumber;
-  //       break;
-  //     case '*':
-  //       firstNumber = firstNumber * secondNumber;
-  //       break;
-  //     case '/':
-  //       if (secondNumber === '0') {
-  //         firstNumber = 'Error!';
-  //       } else {
-  //         firstNumber = firstNumber / secondNumber;
-  //       }
-  //       break;
-  //   }
-  //   finish = true;
-  //   input.value = firstNumber;
-  //   resultCalk.textContent = firstNumber;
-  // }
   if (resultCalk.textContent !== '') {
     document.querySelector('.results').classList.add('psevdoResult');
   }
@@ -212,15 +195,12 @@ function plusMinus(arr) {
     lastDigits = lastDigits + 2 * Math.abs(lastDigits);
   }
   numbers.pop();
-  console.log(numbers);
   numbers.push(lastDigits);
-  console.log(numbers);
   return arr.push(lastDigits);
 }
 
 function results() {
   let arrDigits = numbers.slice(0);
-  console.log(numbers);
 
   let arrSign = sign.slice(0);
   if (plusMinusValue === true) {
@@ -248,10 +228,10 @@ function results() {
 }
 
 function maxDigits(rez) {
-  if (rez.toString().length > 15) {
-    rez = parseFloat(rez.toPrecision(13));
-    if (rez.toString().length > 15) {
-      rez = rez.toExponential(12);
+  if (rez.toString().length > 13) {
+    rez = parseFloat(rez.toPrecision(12));
+    if (rez.toString().length > 13) {
+      rez = rez.toExponential(9);
     }
     return rez;
   } else {

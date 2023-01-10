@@ -114,6 +114,11 @@ body {
   color: rgb(100, 22, 22);
   background-color: transparent;
 }
+.isFinishRezult {
+  font-size: 4rem;
+  color: rgb(0, 26, 255);
+  text-shadow: 2px -3px 3px rgb(255, 230, 2);
+}
 .psevdoResult::before {
   content: '=';
   color: #000;
