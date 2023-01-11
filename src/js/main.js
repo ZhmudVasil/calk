@@ -86,10 +86,26 @@ function clearAll() {
 
 document.querySelector('.button__null').onclick = clearAll;
 
+document.querySelector('.board__text').onkeyup = (event) => {
+  input.value = input.value.substr(0, input.value.length - 1);
+  let key = event.key;
+  if ((key >= '0' && key <= '9') || ['+', '-', '/', '*', '%', '.', '=', ','].includes(key) || key === 'Enter') {
+    mainCalk(key);
+  } else return;
+};
+
 document.querySelector('.buttons').onclick = (event) => {
-  let target = event.target;
   let key = event.target.textContent;
-  if (target.classList.contains('button__equal')) {
+  // let target = event.target;
+  // if (!target.classList.contains('button')) return;
+  // if (target.classList.contains('button__null')) return;
+  if ((key >= '0' && key <= '9') || ['+', '-', '/', '*', '%', '.', '='].includes(key) || key === '+/-') {
+    mainCalk(key);
+  } else return;
+};
+
+function mainCalk(key) {
+  if (key === '=' || key === 'Enter') {
     if (finish === true && sign[0]) {
       numbers.push(numbers[numbers.length - 1]);
       sign.push(sign[sign.length - 1]);
@@ -104,9 +120,7 @@ document.querySelector('.buttons').onclick = (event) => {
     clearAll();
     finish = false;
   }
-  if (!target.classList.contains('button')) return;
-  if (target.classList.contains('button__null')) return;
-  if (target.classList.contains('button__point')) {
+  if (key === '.' || key === ',') {
     let lastSimbol = input.value.slice(input.value.length - 1);
 
     if (lastSimbol === '*' || lastSimbol === '/' || lastSimbol === '+' || lastSimbol === '-' || lastSimbol === '') {
@@ -126,7 +140,7 @@ document.querySelector('.buttons').onclick = (event) => {
     value += '.';
     return;
   }
-  if (target.classList.contains('button__proc')) {
+  if (key === '%') {
     let lastSign = sign[sign.length - 1];
     if (value !== '' && value !== '0.') {
       let lengthStr = input.value.length - numbers[numbers.length - 1].toString().length;
@@ -145,8 +159,6 @@ document.querySelector('.buttons').onclick = (event) => {
     return;
   }
   if (digit.includes(key)) {
-    let lastSimbol = input.value.slice(input.value.length - 1);
-    let lastTwoSimbol = input.value.slice(input.value.length - 2);
     if (value !== '') {
       numbers.pop();
     }
@@ -181,7 +193,7 @@ document.querySelector('.buttons').onclick = (event) => {
 
     return;
   }
-  if (target.classList.contains('button__plusMinus')) {
+  if (key === '+/-') {
     plusMinusValue = true;
     let lastDigits = numbers[numbers.length - 1];
     let lengthPositivStr = input.value.length - lastDigits.toString().length;
@@ -203,7 +215,124 @@ document.querySelector('.buttons').onclick = (event) => {
   if (resultCalk.textContent !== '') {
     document.querySelector('.results').classList.add('psevdoResult');
   }
-};
+}
+
+// document.querySelector('.buttons').onclick = (event) => {
+//   let target = event.target;
+//   let key = event.target.textContent;
+//   if (target.classList.contains('button__equal')) {
+//     if (finish === true && sign[0]) {
+//       numbers.push(numbers[numbers.length - 1]);
+//       sign.push(sign[sign.length - 1]);
+//       resultCalk.textContent = results();
+//     } else {
+//       finish = true;
+//       document.querySelector('.results').classList.add('isFinishRezult');
+//     }
+//     return;
+//   }
+//   if (finish === true) {
+//     clearAll();
+//     finish = false;
+//   }
+//   if (!target.classList.contains('button')) return;
+//   if (target.classList.contains('button__null')) return;
+//   if (target.classList.contains('button__point')) {
+//     let lastSimbol = input.value.slice(input.value.length - 1);
+
+//     if (lastSimbol === '*' || lastSimbol === '/' || lastSimbol === '+' || lastSimbol === '-' || lastSimbol === '') {
+//       input.value += '0.';
+//       value += '0.';
+//       numbers.push(+value);
+//     } else if (lastSimbol === '.') {
+//       return;
+//     }
+//     if (
+//       input.value.split('.').length > 1 &&
+//       input.value.split('.')[input.value.split('.').length - 1].match(/\/|\*|\+|-|=/) === null
+//     ) {
+//       return;
+//     }
+//     input.value += '.';
+//     value += '.';
+//     return;
+//   }
+//   if (target.classList.contains('button__proc')) {
+//     let lastSign = sign[sign.length - 1];
+//     if (value !== '' && value !== '0.') {
+//       let lengthStr = input.value.length - numbers[numbers.length - 1].toString().length;
+//       if (lastSign === undefined || lastSign === '/' || lastSign === '*') {
+//         let lastNumber = numbers.pop();
+//         numbers.push(+lastNumber / 100);
+//       } else if (lastSign === '+' || lastSign === '-') {
+//         let lastNumber = numbers.pop();
+//         let numberForProc = numbers[numbers.length - 1];
+//         numbers.push((+numberForProc * +lastNumber) / 100);
+//       }
+//       let text = input.value.substring(0, lengthStr);
+//       input.value = text + numbers[numbers.length - 1];
+//       resultCalk.textContent = results();
+//     }
+//     return;
+//   }
+//   if (digit.includes(key)) {
+//     if (value !== '') {
+//       numbers.pop();
+//     }
+//     if (value === '0') {
+//       let text = input.value;
+//       input.value = text.substr(0, text.length - 1) + key;
+//     } else {
+//       input.value += key;
+//     }
+
+//     value += key;
+//     numbers.push(+value);
+//     resultCalk.textContent = results();
+//   }
+
+//   if (action.includes(key)) {
+//     if (!numbers[0]) return;
+//     if (numbers.length <= sign.length) {
+//       sign.pop();
+//       sign.push(key);
+//       let text = input.value;
+//       input.value = text.substr(0, text.length - 1) + key;
+//     } else {
+//       if (+numbers[numbers.length - 1] > 0 && numbers.length - sign.length !== 1) {
+//         numbers.pop();
+//         numbers.push(+value);
+//       }
+//       value = '';
+//       sign.push(key);
+//       input.value += key;
+//     }
+
+//     return;
+//   }
+//   if (target.classList.contains('button__plusMinus')) {
+//     plusMinusValue = true;
+//     let lastDigits = numbers[numbers.length - 1];
+//     let lengthPositivStr = input.value.length - lastDigits.toString().length;
+//     let lengthNegativStr = input.value.length - lastDigits.toString().length - 2;
+//     let text;
+
+//     if (lastDigits > 0) {
+//       lastDigits = lastDigits - 2 * lastDigits;
+//       text = input.value.substring(0, lengthPositivStr);
+//       input.value = text + '(' + lastDigits + ')';
+//     } else if (lastDigits < 0) {
+//       lastDigits = lastDigits + 2 * Math.abs(lastDigits);
+//       text = input.value.substring(0, lengthNegativStr);
+//       input.value = text + lastDigits;
+//     }
+
+//     resultCalk.textContent = results();
+//   }
+//   if (resultCalk.textContent !== '') {
+//     document.querySelector('.results').classList.add('psevdoResult');
+//   }
+// };
 
 function plusMinus(arr) {
   let lastDigits = +arr.pop();
